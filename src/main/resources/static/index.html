@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<body>
+<div id="app">
+    <el-row>
+        <el-col :span="12">
+            <div class="grid-content">
+                <template>
+                    <div>
+                        <el-row :gutter="15">
+                            <el-form ref="formData01" :model="formData01" :rules="rules" size="medium"
+                                     label-width="100px">
+                                <el-col :span="18">
+                                    <el-form-item label="ip" prop="ip">
+                                        <el-input v-model="formData01.ip" placeholder="请输入ip" clearable
+                                                  :style="{width: '100%'}"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="端口" prop="port">
+                                        <el-input v-model="formData01.port" placeholder="输入请端口" clearable
+                                                  :style="{width: '100%'}">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="数据库名称" prop="database">
+                                        <el-input v-model="formData01.database" placeholder="请输入数据库名称" clearable
+                                                  :style="{width: '100%'}">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="用户名" prop="userName">
+                                        <el-input v-model="formData01.userName" placeholder="用户名" clearable
+                                                  :style="{width: '100%'}">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="密码" prop="password">
+                                        <el-input v-model="formData01.password" placeholder="请输入密码" clearable
+                                                  show-password
+                                                  :style="{width: '100%'}"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item size="large" style="text-align: center;">
+                                        <el-button type="success" @click="submitForm('formData01',formData01)">Test
+                                            Connection
+                                        </el-button>
+                                        <el-button @click="resetForm('formData01')">重置</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-form>
+                        </el-row>
+                    </div>
+                </template>
+            </div>
+        </el-col>
+        <el-col :span="12">
+            <div class="grid-content">
+                <template>
+                    <div>
+                        <el-row :gutter="15">
+                            <el-form ref="formData02" :model="formData02" :rules="rules" size="medium"
+                                     label-width="100px">
+                                <el-col :span="18">
+                                    <el-form-item label="ip" prop="ip">
+                                        <el-input v-model="formData02.ip" placeholder="请输入ip" clearable
+                                                  :style="{width: '100%'}"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="端口" prop="port">
+                                        <el-input v-model="formData02.port" placeholder="输入请端口" clearable
+                                                  :style="{width: '100%'}">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="数据库名称" prop="database">
+                                        <el-input v-model="formData02.database" placeholder="请输入数据库名称" clearable
+                                                  :style="{width: '100%'}">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="用户名" prop="userName">
+                                        <el-input v-model="formData02.userName" placeholder="用户名" clearable
+                                                  :style="{width: '100%'}">
+                                        </el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="密码" prop="password">
+                                        <el-input v-model="formData02.password" placeholder="请输入密码" clearable
+                                                  show-password
+                                                  :style="{width: '100%'}"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item size="large" style="text-align: center;">
+                                        <el-button type="success" @click="submitForm('formData02',formData02)">Test
+                                            Connection
+                                        </el-button>
+                                        <el-button @click="resetForm('formData02')">重置</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-form>
+                        </el-row>
+                    </div>
+                </template>
+            </div>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24">
+            <div class="grid-content">
+                <el-button style="display: block;margin: 0 auto" type="primary" @click="compare">
+                    COMPARE
+                </el-button>
+            </div>
+        </el-col>
+    </el-row>
+</div>
+</body>
+<script>
+    Vue.prototype.$message = ELEMENT.Message;
+    new Vue({
+        el: '#app',
+        components: {},
+        props: [],
+        data() {
+            return {
+                formData01: {
+                    ip: "",
+                    port: "",
+                    database: "",
+                    userName: "",
+                    password: "",
+                },
+                formData02: {
+                    ip: "",
+                    port: "",
+                    database: "",
+                    userName: "",
+                    password: "",
+                },
+                rules: {
+                    ip: [{
+                        required: true,
+                        message: '请输入ip',
+                        trigger: 'blur'
+                    }, {
+                        pattern: /((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/g,
+                        message: 'ip地址输入有误，请重新输入',
+                        trigger: 'blur'
+                    }],
+                    port: [],
+                    database: [{
+                        required: true,
+                        message: '请输入数据库名称',
+                        trigger: 'blur'
+                    }],
+                    userName: [{
+                        required: true,
+                        message: '用户名用户名',
+                        trigger: 'blur'
+                    }],
+                    password: [{
+                        required: true,
+                        message: '请输入密码',
+                        trigger: 'blur'
+                    }],
+                },
+                connectionMark: false
+            }
+        },
+        computed: {},
+        watch: {},
+        created() {
+        },
+        mounted() {
+        },
+        methods: {
+            submitForm(fromName, fromData) {
+                console.log(fromData)
+                let param = new URLSearchParams();
+                var fromData = JSON.stringify(fromData);
+                param.append("formData", fromData);
+
+                this.$refs[fromName].validate(valid => {
+                    if (!valid) return;
+                    // TODO 提交表单
+                    axios.post("/compare/testConnection", param).then(function (res) {
+                        console.log(res)
+                        if (res.data.status == 0) {
+                            this.ELEMENT.Message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                            this.connectionMark = true;
+                        } else {
+                            this.ELEMENT.Message({
+                                message: res.data.msg,
+                                type: 'error'
+                            });
+                            this.connectionMark = false;
+                        }
+                    })
+
+                })
+                // this.$refs["elForm"].resetFields();
+            },
+            resetForm(fromName) {
+                this.$refs[fromName].resetFields()
+            },
+            compare() {
+                let param01 = new URLSearchParams();
+                var fromData01 = JSON.stringify(this.formData01);
+                var fromData02 = JSON.stringify(this.formData02);
+                param01.append("formDate01", fromData01)
+                param01.append("formDate02", fromData02);
+
+
+                this.$refs["formData01"].validate(valid => {
+                    if (!valid) return;
+                    this.$refs["formData02"].validate(valid => {
+                        if (!valid) return;
+                        // TODO 提交表单
+                        // axios.post("/compare/compare", param01).then(function (res) {
+                        //     console.log(res)
+                        // })
+                        axios({
+                            method: 'post',
+                            data: param01,
+                            url: "/compare/compare",
+                            responseType: 'blob'
+                        }).then(res => {
+                            let blob = new Blob([res.data])
+                            let contentDisposition = res.headers['content-disposition']
+                            let pattern = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
+                            let result = pattern.exec(contentDisposition)
+                            // 使用decodeURI对名字进行解码
+                            let fileName = decodeURI(result[1])
+                            let downloadElement = document.createElement('a')
+                            // 创建下载的链接
+                            let href = window.URL.createObjectURL(blob)
+                            downloadElement.style.display = 'none'
+                            downloadElement.href = href
+                            // 下载后文件名
+                            downloadElement.download = fileName
+                            document.body.appendChild(downloadElement)
+                            // 点击下载
+                            downloadElement.click()
+                            // 下载完成移除元素
+                            document.body.removeChild(downloadElement)
+                            // 释放掉blob对象
+                            window.URL.revokeObjectURL(href)
+                        }).catch(err => {
+                            console.log('下载失败')
+                        })
+                    })
+                })
+            },
+
+            async doCompare() {
+
+            }
+        }
+    })
+</script>
+
+</html>
+

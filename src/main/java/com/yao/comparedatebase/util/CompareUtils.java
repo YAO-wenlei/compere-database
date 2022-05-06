@@ -27,19 +27,6 @@ public class CompareUtils {
 
 
     public ExcelWriter compare(DatabaseEntity databaseEntity1, DatabaseEntity databaseEntity2) throws SQLException {
-//        DatabaseEntity databaseEntity1 = new DatabaseEntity.Builder()
-//                .host("101.200.204.228")
-//                .dataBase("test01")
-//                .userName("root")
-//                .passWord("QWer_1234")
-//                .build();
-//
-//        DatabaseEntity databaseEntity2 = new DatabaseEntity.Builder()
-//                .host("101.200.204.228")
-//                .dataBase("test02")
-//                .userName("root")
-//                .passWord("QWer_1234")
-//                .build();
 
         Connection connection1 = databaseEntity1.getConnection();
         DatabaseMetaData metaData1 = connection1.getMetaData();

@@ -28,8 +28,8 @@ public class OracleDatabaseInstance extends AbstractDatabase{
             Properties props = new Properties() ;
             props.put( "user" , this.getUserName()) ;
             props.put( "password" , this.getPassWord()) ;
-            props.put( "oracle.net.CONNECT_TIMEOUT" , "3000") ;
-            props.put( "oracle.jdbc.ReadTimeout" , "3000" ) ;
+            props.put( "oracle.net.CONNECT_TIMEOUT" , "10000") ;
+            props.put( "oracle.jdbc.ReadTimeout" , "60000" ) ;
             connection = DriverManager.getConnection(this.getHost(), props);
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException("数据库链接异常！");
@@ -40,7 +40,7 @@ public class OracleDatabaseInstance extends AbstractDatabase{
     @Override
     public AbstractDatabase getInstance(DatabaseBuilder databaseBuilder) {
         String port = (!StringUtils.isEmpty(databaseBuilder.getPort()))? databaseBuilder.getPort() : PORT;
-        String host = "jdbc:oracle:thin:@"+databaseBuilder.getHost()+":"+port+":"+databaseBuilder.getDataBase();
+        String host = "jdbc:oracle:thin:@"+databaseBuilder.getHost()+":"+port+":"+"xe";
 
         OracleDatabaseInstance oracleDatabaseInstance = new OracleDatabaseInstance();
         oracleDatabaseInstance.setDriveClass(DRIVE_CLASS);

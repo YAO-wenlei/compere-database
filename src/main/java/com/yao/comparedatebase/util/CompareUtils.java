@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.yao.comparedatebase.entity.AbstractDatabase;
+import oracle.jdbc.OracleDatabaseMetaData;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 @Component
 public class CompareUtils {
 
+    private static final String ORACLE = "ORACLE";
+
 
     public ExcelWriter compare(AbstractDatabase databaseEntity1, AbstractDatabase databaseEntity2) throws SQLException {
 
@@ -37,8 +40,8 @@ public class CompareUtils {
         ExcelWriter excelWriter = null;
         try {
             //获取给定数据库的所有表
-            List<String> tableList1 = getAllTableForDatabase(metaData1, databaseEntity1.getDataBase(), null, "%", new String[]{"TABLE"});
-            List<String> tableList2 = getAllTableForDatabase(metaData2, databaseEntity2.getDataBase(), null, "%", new String[]{"TABLE"});
+            List<String> tableList1 = getAllTableForDatabase(metaData1, databaseEntity1, null, "%", new String[]{"TABLE"});
+            List<String> tableList2 = getAllTableForDatabase(metaData2, databaseEntity2, null, "%", new String[]{"TABLE"});
 
             //获取A库中B库没有的表
             System.out.println(databaseEntity1.getDataBase() + "库比" + databaseEntity2.getDataBase() + "库多的表：");
@@ -70,8 +73,8 @@ public class CompareUtils {
 
             //判断表名是否相等
             boolean dateBaseNameIsEquals = databaseEntity1.getDataBase().equals(databaseEntity2.getDataBase());
-            String database01Name = dateBaseNameIsEquals ? databaseEntity1.getDataBase()+"(1)" : databaseEntity1.getDataBase();
-            String database02Name = dateBaseNameIsEquals ? databaseEntity2.getDataBase()+"(2)" : databaseEntity2.getDataBase();
+            String database01Name = dateBaseNameIsEquals ? databaseEntity1.getDataBase() + "(1)" : databaseEntity1.getDataBase();
+            String database02Name = dateBaseNameIsEquals ? databaseEntity2.getDataBase() + "(2)" : databaseEntity2.getDataBase();
             sameList.stream().forEach(item -> {
                 Map<String, String> tableInfo01 = getTableInfo(metaData1, databaseEntity1.getDataBase(), item);
                 Map<String, String> tableInfo02 = getTableInfo(metaData2, databaseEntity2.getDataBase(), item);
@@ -115,7 +118,7 @@ public class CompareUtils {
             excelWriter = writeExcel(content, sameList);
         } catch (IOException e) {
             System.out.println("写入表格出错");
-        }finally {
+        } finally {
             databaseEntity1.closeConnection(connection1);
             databaseEntity2.closeConnection(connection2);
         }
@@ -125,10 +128,15 @@ public class CompareUtils {
     /**
      * 获取数据库中的所有表
      **/
-    public List<String> getAllTableForDatabase(DatabaseMetaData metaData, String catalog, String schemaPattern, String tableName, String[] type) {
+    public List<String> getAllTableForDatabase(DatabaseMetaData metaData, AbstractDatabase catalog, String schemaPattern, String tableName, String[] type) {
         List<String> tableList = new ArrayList<>();
+        ResultSet tables;
         try {
-            ResultSet tables = metaData.getTables(catalog, schemaPattern, tableName, type);
+            if (ORACLE.equals(catalog.getDatabaseType())) {
+                tables = metaData.getTables(null, catalog.getDataBase(), null, type);
+            } else {
+                tables = metaData.getTables(catalog.getDataBase(), schemaPattern, tableName, type);
+            }
             while (tables.next()) {
                 String table_name = tables.getString("TABLE_NAME");
                 tableList.add(table_name);
@@ -148,7 +156,7 @@ public class CompareUtils {
             ResultSet columns = metaData.getColumns(database, null, tableName, null);
             String column = "";
             while (columns.next()) {
-                column = columns.getString("COLUMN_NAME") + ":" + columns.getString("TYPE_NAME") + ":" + columns.getString("COLUMN_SIZE")+":"+columns.getString("IS_NULLABLE");
+                column = columns.getString("COLUMN_NAME") + ":" + columns.getString("TYPE_NAME") + ":" + columns.getString("COLUMN_SIZE") + ":" + columns.getString("IS_NULLABLE");
                 columnMap.put(columns.getString("COLUMN_NAME"), column);
             }
         } catch (SQLException throwables) {

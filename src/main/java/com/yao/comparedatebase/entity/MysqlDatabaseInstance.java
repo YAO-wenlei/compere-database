@@ -1,13 +1,7 @@
 package com.yao.comparedatebase.entity;
 
 import com.yao.comparedatebase.builder.DatabaseBuilder;
-import com.yao.comparedatebase.builder.DatabaseFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.sql.Connection;

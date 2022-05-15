@@ -4,7 +4,8 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.poi.excel.ExcelWriter;
-import com.yao.comparedatebase.entity.DatabaseEntity;
+import com.yao.comparedatebase.builder.DatabaseFactory;
+import com.yao.comparedatebase.entity.AbstractDatabase;
 import com.yao.comparedatebase.util.CompareUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,9 @@ public class CompareController {
     @Autowired
     CompareUtils compareUtils;
 
+    @Autowired
+    DatabaseFactory databaseFactory;
+
     @PostMapping("/testConnection")
     public Map<String, Object> testConnection(HttpServletRequest request) {
         HashMap<String, Object> result = new HashMap<>();
@@ -43,16 +47,18 @@ public class CompareController {
         String database = (String)jsonObject.get("database");
         String userName = (String)jsonObject.get("userName");
         String password = (String)jsonObject.get("password");
+        String databaseType = (String) jsonObject.get("databaseType");
 
-        DatabaseEntity databaseEntity = new DatabaseEntity.Builder()
+        AbstractDatabase databaseInstance = databaseFactory.getDataBaseBuilder()
+                .databaseType(databaseType)
                 .host(ip)
-                .port(port)
                 .dataBase(database)
                 .userName(userName)
                 .passWord(password)
                 .build();
 
-        return getConnectionResult(databaseEntity);
+
+        return getConnectionResult(databaseInstance);
     }
 
     @PostMapping("/compare")
@@ -67,9 +73,10 @@ public class CompareController {
         String databaseOne = (String) connectionOneParams.get("database");
         String userNameOne = (String) connectionOneParams.get("userName");
         String passwordOne = (String) connectionOneParams.get("password");
-        DatabaseEntity databaseEntityOne = new DatabaseEntity.Builder()
+        String databaseTypeOne = (String) connectionOneParams.get("databaseType");
+        AbstractDatabase databaseInstanceOne = databaseFactory.getDataBaseBuilder()
+                .databaseType(databaseTypeOne)
                 .host(ipOne)
-                .port(portOne)
                 .dataBase(databaseOne)
                 .userName(userNameOne)
                 .passWord(passwordOne)
@@ -81,14 +88,16 @@ public class CompareController {
         String databaseTwo = (String) connectionTwoParams.get("database");
         String userNameTwo = (String) connectionTwoParams.get("userName");
         String passwordTwo = (String) connectionTwoParams.get("password");
-        DatabaseEntity databaseEntityTwo = new DatabaseEntity.Builder()
+        String databaseTypeTwo = (String) connectionTwoParams.get("databaseType");
+
+
+        AbstractDatabase databaseInstanceTwo = databaseFactory.getDataBaseBuilder()
+                .databaseType(databaseTypeTwo)
                 .host(ipTwo)
-                .port(portTwo)
                 .dataBase(databaseTwo)
                 .userName(userNameTwo)
                 .passWord(passwordTwo)
                 .build();
-
 
         response.setContentType("application/vnd.ms-excel;charset=utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=compare.xls");
@@ -96,7 +105,7 @@ public class CompareController {
         ExcelWriter writer = null;
         try {
             out = response.getOutputStream();
-            writer = compareUtils.compare(databaseEntityOne, databaseEntityTwo);
+            writer = compareUtils.compare(databaseInstanceOne, databaseInstanceTwo);
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -108,7 +117,7 @@ public class CompareController {
     }
 
 
-    private HashMap<String, Object> getConnectionResult(DatabaseEntity databaseEntity) {
+    private HashMap<String, Object> getConnectionResult(AbstractDatabase databaseEntity) {
         HashMap<String, Object> result = new HashMap<>();
         Connection connection = null;
         try {

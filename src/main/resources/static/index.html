@@ -52,6 +52,16 @@
                                                   :style="{width: '100%'}"></el-input>
                                     </el-form-item>
                                 </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="数据库类型" prop="databaseType">
+                                        <el-select v-model="formData01.databaseType" placeholder="请选择下拉选择" clearable
+                                                   :style="{width: '100%'}">
+                                            <el-option v-for="(item, index) in databaseTypeOptions" :key="index"
+                                                       :label="item.label"
+                                                       :value="item.value" :disabled="item.disabled"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
                                 <el-col :span="24">
                                     <el-form-item size="large" style="text-align: center;">
                                         <el-button type="success" @click="submitForm('formData01',formData01)">Test
@@ -107,6 +117,16 @@
                                                   :style="{width: '100%'}"></el-input>
                                     </el-form-item>
                                 </el-col>
+                                <el-col :span="18">
+                                    <el-form-item label="数据库类型" prop="databaseType">
+                                        <el-select v-model="formData02.databaseType" placeholder="请选择下拉选择" clearable
+                                                   :style="{width: '100%'}">
+                                            <el-option v-for="(item, index) in databaseTypeOptions" :key="index"
+                                                       :label="item.label"
+                                                       :value="item.value" :disabled="item.disabled"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
                                 <el-col :span="24">
                                     <el-form-item size="large" style="text-align: center;">
                                         <el-button type="success" @click="submitForm('formData02',formData02)">Test
@@ -147,6 +167,7 @@
                     database: "",
                     userName: "",
                     password: "",
+                    databaseType:""
                 },
                 formData02: {
                     ip: "",
@@ -154,7 +175,15 @@
                     database: "",
                     userName: "",
                     password: "",
+                    databaseType:""
                 },
+                databaseTypeOptions: [{
+                    "label": "MYSQL",
+                    "value": "MYSQL"
+                }, {
+                    "label": "ORACLE",
+                    "value": "ORACLE"
+                }],
                 rules: {
                     ip: [{
                         required: true,
@@ -180,6 +209,11 @@
                         required: true,
                         message: '请输入密码',
                         trigger: 'blur'
+                    }],
+                    databaseType: [{
+                        required: true,
+                        message: '请选择下拉选择',
+                        trigger: 'change'
                     }],
                 },
                 connectionMark: false

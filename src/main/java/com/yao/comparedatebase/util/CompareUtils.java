@@ -3,7 +3,7 @@ package com.yao.comparedatebase.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
-import com.yao.comparedatebase.entity.DatabaseEntity;
+import com.yao.comparedatebase.entity.AbstractDatabase;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class CompareUtils {
 
 
-    public ExcelWriter compare(DatabaseEntity databaseEntity1, DatabaseEntity databaseEntity2) throws SQLException {
+    public ExcelWriter compare(AbstractDatabase databaseEntity1, AbstractDatabase databaseEntity2) throws SQLException {
 
         Connection connection1 = databaseEntity1.getConnection();
         DatabaseMetaData metaData1 = connection1.getMetaData();
@@ -148,7 +148,7 @@ public class CompareUtils {
             ResultSet columns = metaData.getColumns(database, null, tableName, null);
             String column = "";
             while (columns.next()) {
-                column = columns.getString("COLUMN_NAME") + ":" + columns.getString("TYPE_NAME") + ":" + columns.getString("COLUMN_SIZE");
+                column = columns.getString("COLUMN_NAME") + ":" + columns.getString("TYPE_NAME") + ":" + columns.getString("COLUMN_SIZE")+":"+columns.getString("IS_NULLABLE");
                 columnMap.put(columns.getString("COLUMN_NAME"), column);
             }
         } catch (SQLException throwables) {
